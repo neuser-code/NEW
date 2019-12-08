@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sun Oct 29 14:55:16 2017
-Управление светодиодной матрицей по протоколу mqtt
+
 @author: alexander
 """
 
