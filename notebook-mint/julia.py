@@ -1,4 +1,4 @@
-#!/usr/env/python3
+#!/usr/bin/python3
 
 # При подключении по SSTP к zyxel keenetic необходимо вручную прописать маршрут для vpn.
 # Для примера с Биляром

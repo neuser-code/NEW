@@ -1,0 +1,24 @@
+OSX/Linux
+
+Open Terminal or Console and run the following command:
+
+$ ssh -D 8080 username@example.com
+
+example.com would be the URL of the machine you're trying to connect to (it could also be an IP address).
+
+Some of the more useful flags you can use are -C2qTnN, which have the following affects:
+
+    C: Requests compression of all data
+    2: Forces ssh to try protocol version 2 only
+    q: Quiet mode
+    T: Disable pseudo-tty allocation
+    n: Redirects stdin from /dev/null (actually, prevents reading from stdin)
+    N: Do not execute a remote command (doesn't open the shell)
+
+Sending Traffic through your Tunnel
+Firefox
+
+In Preferences > Advanced > Network > Settings... select Manual proxy configuration and then add 127.0.0.1 and port 8080 to the SOCKS Host. Make sure SOCKS v5 is selected, and then click OK. This will force all traffic through port 8080 on your local machine, which is the same port your SSH tunnel is listening on. Your tunnel will receive this traffic and forward it on to the server it is connected to.
+Chrome
+
+Wrench > Options > Under the Hood (Bonnet) > Change Proxy Settings > LAN Settings. In both cases you need to enable “Use a proxy server for your LAN” and then click Advanced. Add 127.0.0.1 and 8080 into the SOCKS row and click OK.
