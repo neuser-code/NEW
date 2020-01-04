@@ -1,0 +1,20 @@
+s = requests.Session()
+
+
+a = s.get('http://192.168.12.16/wcd/index.html?access=SYS_INF')
+
+
+a = s.get('http://192.168.12.16/wcd/system_device.xml')
+
+
+soup = BeautifulSoup(a.text, 'html.parser')
+
+
+list_data = soup.find_all('consumable')
+
+
+
+for k in list_data:
+    if k.find('color'):
+        print(k.find('color').contents, k.find('levelper').contents, k.find('type').contents)
+
