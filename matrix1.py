@@ -4,7 +4,7 @@ Created on Sun Oct 29 14:55:16 2017 http://micropython.org/webrepl
 Управление светодиодной матрицей по протоколу mqtt
 @author: alexander
 """
-#################
+
 from umqtt.simple import MQTTClient
 import ubinascii
 import machine
@@ -22,17 +22,12 @@ pix = neopixel.NeoPixel(machine.Pin(5), 256)
 red = 0; green = 0; blue = 0
 pixel = [red, green, blue]
 
-m = [[x for x in range(0,16)] for k in range(0, 16)]
-k = 0
-for i in range(0, 16):
-        for d in range(0,16):
-                m[i][d] = [k, (0,0,0)]
-                k += 1
+def json_file_2_obj(file):
+    import json
+    with open(file, 'r', encoding='utf-8') as f:
+        return json.load(f)
 
-for t in range(0, 16):
-        if t % 2 != 0:
-                m[t].reverse()
-
+m = []
 
 def sub_cb(topic, msg):
     global tm_1
@@ -49,18 +44,33 @@ def sub_cb(topic, msg):
     elif d[0] == b'newsub1':
         if str(msg.decode()) == "paint":
             paint()
+        elif str(msg.decode()) == "sne":
+            m = json_file_2_obj('sneg')
+            pict(m)
+        elif str(msg.decode()) == "elka":
+            m = json_file_2_obj('elka')
+            pict(m)
+        elif str(msg.decode()) == "cross":
+            m = json_file_2_obj('cross')
+            pict(m)
         elif str(msg.decode()) == "smile":
-            pict()
+            m = json_file_2_obj('smile')
+            pict(m)
+        elif str(msg.decode()) == "lamp1":
+            m = json_file_2_obj('lamp1')
+            pict(m)
+        elif str(msg.decode()) == "lamp2":
+            m = json_file_2_obj('lamp2')
+            pict(m)
 
 def paint():
     for i in range(0,256):
         pix[i] = (pixel[0], pixel[1], pixel[2])
     pix.write()
 
-def pict():
-    for k in range(0,16):
-        for i in range(0,16):
-            pix[m[k][i][0]] = m[k][i][1]
+def pict(m):
+    for k in m:
+        pix[k] = (pixel[0], pixel[1], pixel[2])
     pix.write()
 
 
