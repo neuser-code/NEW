@@ -19,6 +19,7 @@ TOPIC_blue = b"blue1"
 TOPIC_cmd = b"newsub1"
 TOPIC3 = b"public31"
 pix = neopixel.NeoPixel(machine.Pin(5), 256)
+<<<<<<< HEAD
 global t
 global tm_1
 global red_level; red_level = 0
@@ -50,11 +51,28 @@ def sub_cb(topic, msg):
     global red_level
     global green_level
     global blue_level
+=======
+red = 0; green = 0; blue = 0
+pixel = [red, green, blue]
+
+picture_list = ['sneg', 'cross', 'smile', 'elka', 'puzyirki']
+
+def json_file_2_obj(file):
+    import json
+    with open(file, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+m = []
+
+def sub_cb(topic, msg):
+    global tm_1
+>>>>>>> new
     print((topic, msg))
     tm = time.localtime()
     tm_1 = time.localtime(time.mktime((tm[0], tm[1], tm[2], tm[3]+3, tm[4], tm[5], tm[6], tm[7])))
     d = (topic, msg)
     if d[0] == b'red1':
+<<<<<<< HEAD
         red_level = int(msg.decode())
     elif d[0] == b'green1':
         green_level = int(msg.decode())
@@ -96,6 +114,28 @@ def sm():
     for i in range(5,11):
         pix[t[i][12]] = (r,g,b)
     pix[t[4][11]] = (r,g,b);pix[t[11][11]] = (r,g,b)
+=======
+        pixel[0] = int(msg.decode())
+    elif d[0] == b'green1':
+        pixel[1] = int(msg.decode())
+    elif d[0] == b'blue1':
+        pixel[2] = int(msg.decode())
+    elif d[0] == b'newsub1':
+        if str(msg.decode()) == "paint":
+            paint()
+        elif str(msg.decode()) in picture_list:
+            m = json_file_2_obj(msg.decode())
+            pict(m)
+
+def paint():
+    for i in range(0,256):
+        pix[i] = (pixel[0], pixel[1], pixel[2])
+    pix.write()
+
+def pict(m):
+    for k in m:
+        pix[k] = (pixel[0], pixel[1], pixel[2])
+>>>>>>> new
     pix.write()
 
 
@@ -103,7 +143,10 @@ def tst2(server=SERVER):
     n = 0
     m = 0
     ntptime.settime()
+<<<<<<< HEAD
     global t
+=======
+>>>>>>> new
     global tm_1
     tm = time.localtime()
     tm_1 = time.localtime(time.mktime((tm[0], tm[1], tm[2], tm[3]+3, tm[4], tm[5], tm[6], tm[7])))
@@ -161,4 +204,7 @@ def tst2(server=SERVER):
             except OSError:
                 print('Reconnect fail')
                 fail = True
+<<<<<<< HEAD
 
+=======
+>>>>>>> new
