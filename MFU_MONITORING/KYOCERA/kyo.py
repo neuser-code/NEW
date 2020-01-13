@@ -1,16 +1,10 @@
 #!/usr/bin/python3
-
-
-# Опрос модели МФУ по SNMP и счетчика распечатанных листов.
-# Модели P3050dn, M2035, M2040, M2135
-
 import requests
 import re
 from sys import argv
-from os import popen
+import json
 
 ip_addr = argv[1]
-kyo_model = popen(f'snmpget -v 2c -c public {ip_addr} iso.3.6.1.2.1.43.5.1.1.16.1').read().split(' ')[4].strip('\n, "')
 
 def prnt_counter_P3050dn(ip_addr):
     prnt_count_url = f'http://{ip_addr}/js/jssrc/model/dvcinfo/dvccounter/DvcInfo_Counter_PrnCounter.model.htm'
@@ -30,7 +24,8 @@ def prnt_counter_M2035dn(ip_addr):
         return counter_total
     else:
         requests.post(wakeup_url, 'submit001=%D0%9F%D1%83%D1%81%D0%BA&okhtmfile=DeepSleepApply.htm&func=wakeup')
-        
+
+
 def prnt_counter_M2040dn(ip_addr):
     prnt_count_url = f'http://{ip_addr}/js/jssrc/model/dvcinfo/dvccounter/DvcInfo_Counter_PrnCounter.model.htm'
     headers = {'Referer': f'http://{ip_addr}/'}
@@ -40,11 +35,31 @@ def prnt_counter_M2040dn(ip_addr):
     counter_total = counter0_copy + counter1_print
     return counter_total
 
-if 'P3050' in kyo_model:
-    result = prnt_counter_P3050dn(ip_addr);print(result)
-elif 'M2035' in kyo_model:
-    result = prnt_counter_M2035dn(ip_addr);print(result)
-elif 'M2040' or 'M2135' in kyo_model:
-    result = prnt_counter_M2040dn(ip_addr);print(result)
-else:
-    print('Non known model')
+
+def kyo_model_via_http(ip_addr):
+    headers = {'Referer': f'http://{ip_addr}'}
+    url = f'http://{ip_addr}/js/jssrc/model/startwlm/Start_Wlm.model.htm' #3050dn, 2040dn, 2135
+    resp = requests.get(url, headers=headers)
+    if '404' in resp.text:
+        url = f'http://{ip_addr}/startwlm/Start_Wlm.htm' #2035dn
+        resp = requests.get(url, headers=headers)
+    elif 'DeepSleep' in resp.text:
+        headers = {'Referer': f'http://{ip_addr}/DeepSleep.htm'}
+        url = f'http://{ip_addr}/DeepSleep.js' #sleeping
+        resp = requests.get(url, headers=headers)
+        wakeup_url = f'http://{ip_addr}/esu/set.cgi'
+        requests.post(wakeup_url, 'submit001=%D0%9F%D1%83%D1%81%D0%BA&okhtmfile=DeepSleepApply.htm&func=wakeup')
+    model = 'UNKNOWN'
+    Prnt_count = 0
+    if 'ECOSYS P3050dn' in resp.text:
+        model = "P3050dn"; Prnt_count = prnt_counter_P3050dn(ip_addr)
+    elif 'ECOSYS M2040dn' in resp.text:
+        model = 'M2040dn'; Prnt_count = prnt_counter_M2040dn(ip_addr)
+    elif 'ECOSYS M2135dn' in resp.text:
+        model = 'M2135dn'; Prnt_count = prnt_counter_M2040dn(ip_addr)
+    elif 'ECOSYS M2035dn' in resp.text:
+        model = 'M2035dn'; Prnt_count = prnt_counter_M2035dn(ip_addr)
+    return {"model": model, "pages": Prnt_count}
+
+
+print(json.dumps(kyo_model_via_http(ip_addr)))
