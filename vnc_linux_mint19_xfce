@@ -1,0 +1,11 @@
+https://onformix.blogspot.com/2018/10/x11vnc.html
+
+[Unit]
+Description=Start x11vnc at startup.
+After=multi-user.target
+[Service]
+Type=simple
+#ExecStart=/usr/bin/x11vnc -xkb -bg -noxrecord -auth /usr/lib/xorg/Xorg :0 -dontdisconnect -notruecolor -shared -noxfixes -noxdamage -display :0 -rfbauth /etc/x11vnc/passwd -forever -o /var/log/x11vnc.log
+ExecStart=/usr/bin/x11vnc -auth guess -forever -loop -noxdamage -repeat -rfbauth /etc/x11vnc/passwd -rfbport 5900 -shared
+[Install]
+WantedBy=multi-user.target
