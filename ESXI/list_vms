@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+# VMware vSphere Python SDK
+# Copyright (c) 2008-2015 VMware, Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#Переделанный упрощенный скрипт	для получения списка виртуальных машин
+
+from __future__ import print_function
+from pyVim.connect import SmartConnect, Disconnect
+from pyVmomi import vim
+import atexit
+import ssl
+from sys import argv
+
+ip_address = argv[1]
+usenname = argv[2]
+password = argv[3]
+d = {"poweredOn": "Включена", "poweredOff": "Отключена"}
+
+context = ssl._create_unverified_context()
+
+si = SmartConnect(host=ip_address,
+                     user=usenname,
+                     pwd=password,
+                     port=int(443),
+                     sslContext=context)
+
+atexit.register(Disconnect, si)
+content = si.RetrieveContent()
+
+for child in content.rootFolder.childEntity:
+    if hasattr(child, 'vmFolder'):
+        datacenter = child
+        vmFolder = datacenter.vmFolder
+        vmList = vmFolder.childEntity
+        for vm in vmList:
+            print(vm.name, "ОC",vm.guest.guestFullName, "IP Адрес",vm.guest.ipAddress, d.get(vm.summary.runtime.powerState), vm.config.annotation, "\n")
