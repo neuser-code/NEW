@@ -50,6 +50,9 @@ def sub_cb(topic, msg):
     elif d[0] == b'newsub1':
         if str(msg.decode()) == "paint":
             paint()
+        elif str(msg.decode()) == "random":
+            random_pixel()
+            pict(m)
         elif str(msg.decode()) in picture_list:
             m = json_file_2_obj(msg.decode())
             pict(m)
@@ -58,12 +61,15 @@ def paint():
     for i in range(0,256):
         pix[i] = (pixel[0], pixel[1], pixel[2])
     pix.write()
-
+    
+def random_pixel():
+    for number_of_pixels in range(15):
+        m.append(random.getrandbits(8))
+        
 def pict(m):
     for k in m:
         pix[k] = (pixel[0], pixel[1], pixel[2])
     pix.write()
-
 
 def tst2(server=SERVER):
     n = 0
