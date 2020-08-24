@@ -15,6 +15,7 @@ import machine
 import time
 import ntptime
 import neopixel
+import urandom
 CLIENT_ID = ubinascii.hexlify(machine.unique_id())
 SERVER = "m12.cloudmqtt.com"
 TOPIC_red = b"red1"
@@ -64,7 +65,7 @@ def paint():
     
 def random_pixel():
     for number_of_pixels in range(15):
-        m.append(random.getrandbits(8))
+        m.append(urandom.getrandbits(8))
         
 def pict(m):
     for k in m:
