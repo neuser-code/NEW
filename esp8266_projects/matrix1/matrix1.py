@@ -52,7 +52,7 @@ def sub_cb(topic, msg):
         if str(msg.decode()) == "paint":
             paint()
         elif str(msg.decode()) == "random":
-            random_pixel()
+            m = random_pixel()
             pict(m)
         elif str(msg.decode()) in picture_list:
             m = json_file_2_obj(msg.decode())
@@ -64,8 +64,10 @@ def paint():
     pix.write()
     
 def random_pixel():
+    l = []
     for number_of_pixels in range(15):
-        m.append(urandom.getrandbits(8))
+        l.append(urandom.getrandbits(8))
+    return l
         
 def pict(m):
     for k in m:
